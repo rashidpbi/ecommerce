@@ -1,0 +1,21 @@
+# Ignore node_modules for both frontend and server
+/frontend/node_modules
+/server/node_modules
+
+# Ignore environment variables
+/frontend/.env
+/backend/.env
+
+# Ignore build or dist folders (if any)
+/frontend/build
+/backend/dist
+
+# Ignore log files
+*.log
+
+# Ignore any specific IDE or editor files
+.vscode/
+.idea/
+
+# Ignore MacOS system files
+.DS_Store
