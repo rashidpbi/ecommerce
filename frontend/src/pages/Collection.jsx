@@ -1,9 +1,9 @@
-import React from 'react'
+import AllCollections from '../components/AllCollections'
 
 const Collection = () => {
   return (
     <div>
-      
+      <AllCollections/>
     </div>
   )
 }
