@@ -1,9 +1,9 @@
-// import AllCollections from '../components/AllCollections'
+import AllCollections from '../components/AllCollections'
 
 const Collection = () => {
   return (
     <div>
-      {/* <AllCollections/> */}
+      <AllCollections/>
     </div>
   )
 }
