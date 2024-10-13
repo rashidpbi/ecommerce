@@ -8,6 +8,7 @@ import { assets } from "../assets/assets";
 
 const AllCollections = () => {
   const [visible, setVisible] = useState(false);
+  const [isClickable, setIsClickable] = useState(true);
 
   const { products } = useContext(ShopContext);
   const [collection, setCollection] = useState(products);
@@ -42,6 +43,16 @@ const AllCollections = () => {
   };
 
   useEffect(() => {
+    const handleResize = () => {
+      // Check if the screen is medium or above (md in Tailwind corresponds to 768px)
+      if (window.innerWidth >= 768) {
+        setVisible(true)
+        setIsClickable(false); // Disable onClick for md and above
+      } else {
+        setIsClickable(true); // Enable onClick for smaller screens
+      }
+    };
+
     function sortCollection() {
       let sortedProducts = [];
 
@@ -183,6 +194,13 @@ const AllCollections = () => {
     }
 
     sortCollection();
+    handleResize();
+
+    // Add resize event listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
   }, [value, categories, subCategories]);
 
   return (
@@ -190,7 +208,9 @@ const AllCollections = () => {
       <div className="flex flex-col md:flex-row gap-24 justify-between ">
         <div className="flex flex-col">
           <div
-                onClick={() => setVisible(!visible)}
+                onClick={() => {  if (isClickable) {
+                  setVisible(!visible);
+                }}}
                 className="flex p-3 items-center gap-4 cursor-pointer"
               >
                 <p>Filter</p>
