@@ -49,6 +49,7 @@ const AllCollections = () => {
         setVisible(true)
         setIsClickable(false); // Disable onClick for md and above
       } else {
+        
         setIsClickable(true); // Enable onClick for smaller screens
       }
     };
