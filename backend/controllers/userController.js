@@ -96,7 +96,7 @@ try {
       res.json({success:false,message:"invalid credentials"})
    }
 } catch (error) {
-   console.log(err)
+   console.log(err)  
 res.json({success:false,message:err.message})
 }
 

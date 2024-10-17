@@ -1,10 +1,12 @@
 # Ignore node_modules for both frontend and server
 /frontend/node_modules
 /backend/node_modules
+/admin/node_modules
 
 # Ignore environment variables
 /frontend/.env
 /backend/.env
+/admin/.env
 
 # Ignore build or dist folders (if any)
 /frontend/build
