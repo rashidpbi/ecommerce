@@ -28,8 +28,7 @@ const Collection = () => {
     }
   };
 
-  const applyFilter = () => {
-    let productsCopy = products.slice();
+  const applyFilter = (productsCopy) => {
     if (category.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         category.includes(item.category)
@@ -41,33 +40,36 @@ const Collection = () => {
       );
     }
 
-    setFilterProducts(productsCopy);
+    return productsCopy
   };
 
-  const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
+  const sortProduct = (productsCopy) => {
     switch (sortType) {
       case "low-high":
-        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price));
-        break;
+        return [...productsCopy.sort((a, b) => (a.price - b.price))];
+      
 
       case "high-low":
-        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
-        break;
+        return [...productsCopy.sort((a, b) => (b.price - a.price))];
 
       default:
-        applyFilter();
-        break;
+        return productsCopy
+      
     }
   };
 
-  useEffect(() => {
-    applyFilter();
-  }, [category, subCategory]);
+  const handleFilterAndSort = ()=>{
+    let productsCopy = products.slice()
+    productsCopy = applyFilter(productsCopy)
+    productsCopy = sortProduct(productsCopy)
+    setFilterProducts(productsCopy)
+  }
 
   useEffect(() => {
-    sortProduct();
-  }, [sortType]);
+    handleFilterAndSort()
+  }, [category, subCategory,sortType]);
+
+
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
       {/*  Filter options*/}
@@ -170,7 +172,7 @@ const Collection = () => {
             className="border-2 border-gray-300 text-sm px-2"
           >
             <option value="relevant">Sort by: Relevant</option>
-            <option value="low-hight">Sort by: Low to High</option>
+            <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: Hight to Low</option>
           </select>
         </div>
@@ -183,7 +185,7 @@ const Collection = () => {
               name={item.name}
               id={item._id}
               price={item.price}
-              image={item.image}
+              image={item.image} 
             />
           ))}
         </div>
