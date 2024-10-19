@@ -22,6 +22,7 @@ try{
     })
    )
 
+
    const productData = {
     name,
     description,
@@ -44,7 +45,7 @@ res.json({success:false,message:err.message})
 console.log(err)
 }
 
-}
+} 
 
 //fn for list product\
 const listProducts = async (req,res)=>{

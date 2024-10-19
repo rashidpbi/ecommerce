@@ -5,7 +5,6 @@ import validator from "validator"
 
 
 const createToken = (id)=>{
-   console.log("id :",id)
     return jwt.sign({id},process.env.JWT_SECRET_KEY,)
 }
 
