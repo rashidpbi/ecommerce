@@ -72,7 +72,7 @@ const Collection = () => {
 
   useEffect(() => {
     handleFilterAndSort()
-  }, [category, subCategory,sortType,search,showSearch]);
+  }, [category, subCategory,sortType,search,showSearch,products]);
 
 
   return (
