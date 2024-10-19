@@ -3,14 +3,17 @@ import { products } from "../assets/assets";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { backendUrl } from "../../../admin/src/App";
 
 export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
   const currency = "$";
   const delivery_fee = 10;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  // const [products,setProducts] = useState([])
  const navigate = useNavigate()
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -78,6 +81,15 @@ setCartItems(cartData)
 
     return totalAmount;
   }
+    const getProductsData = async()=>{
+
+      try {
+        
+      } catch (error) {
+        
+      }
+    }
+
   const value = {
     products,
     currency,
@@ -91,7 +103,8 @@ setCartItems(cartData)
     getCartCount,
     updateQuantity,
     getCartAmount,
-    navigate
+    navigate,backendUrl
+
 
   };
 
