@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -9,7 +8,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'react-router-dom': require.resolve('react-router-dom'),
+      'react-router-dom': 'react-router-dom',  
     },
   },
 });
