@@ -4,11 +4,20 @@ import Title from "../components/Title";
 import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
-import axios from 'axios'
+import axios from "axios";
+import { currency } from "../../../admin/src/App";
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
-  const { navigate,backendUrl,token,cartItems, setCartItems,getCartAmount,delivery_fee, products} = useContext(ShopContext);
-
+  const {
+    navigate,
+    backendUrl,
+    token,
+    cartItems,
+    setCartItems,
+    getCartAmount,
+    delivery_fee,
+    products,
+  } = useContext(ShopContext);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -28,55 +37,113 @@ const PlaceOrder = () => {
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
-  const onSubmitHandler = async(e)=>{
-e.preventDefault()
-
+    const initPay = (order)=>{
+      const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount:order.amount,
+      currency:order.currency,
+      name:'Order Payment',
+      descrption:'Order Payment',
+      order_id:order.id,
+      receipt:order.receipt,
+      handler:async (response)=>{
+        console.log(response)
 try {
-  let orderItems = []
-  for(const items in cartItems){
-    for(const item in cartItems[items]){
-      if (cartItems[items][item]>0) {
-        const itemInfo = structuredClone(products.find(product => product._id === items))
-        if (itemInfo) {
-          itemInfo.size = item
-          itemInfo.quantity = cartItems[items][item]
-          orderItems.push(itemInfo)
+  const {data} = await axios.post(backendUrl + '/api/order/verifyRazorpay',response,{headers:{token}})
+  if (data.success) {
+    navigate('/orders')
+    setCartItems({})
+    
+  }
+} catch (error) {
+  console.log(error)
+  toast.error(error)
+}
+      }
+      }
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+    }
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      let orderItems = [];
+      for (const items in cartItems) {
+        for (const item in cartItems[items]) {
+          if (cartItems[items][item] > 0) {
+            const itemInfo = structuredClone(
+              products.find((product) => product._id === items)
+            );
+            if (itemInfo) {
+              itemInfo.size = item;
+              itemInfo.quantity = cartItems[items][item];
+              orderItems.push(itemInfo);
+            }
+          }
         }
       }
-    }
-  }
-  
-  let orderData = {
-    address:formData,
-    items:orderItems,
-    amount:getCartAmount() + delivery_fee
-  }
 
-  switch (method) {
-    //api calls for cod
-    case 'cod':
-      const response = await axios.post(backendUrl + '/api/order/place',orderData,{headers:{token}})
-      console.log(response.data);
-      
-      if (response.data.success) {
-        setCartItems({})
-        navigate('/orders')
-      }else{
-        toast.error(response.data.message)
+      let orderData = {
+        address: formData,
+        items: orderItems,
+        amount: getCartAmount() + delivery_fee,
+      };
+
+      switch (method) {
+        //api calls for cod
+        case "cod":
+          const response = await axios.post(
+            backendUrl + "/api/order/place",
+            orderData,
+            { headers: { token } }
+          );
+          console.log(response.data);
+
+          if (response.data.success) {
+            setCartItems({});
+            navigate("/orders");
+          } else {
+            toast.error(response.data.message);
+          }
+
+          break;
+
+        case "stripe":
+          const responseStripe = await axios.post(
+            backendUrl + "/api/order/stripe",
+            orderData,
+            { headers: { token } }
+          );
+          if (responseStripe.data.success) {
+            const { session_url } = responseStripe.data;
+            window.location.replace(session_url);
+          } else {
+            toast.error(responseStripe.data.message);
+          }
+
+          break;
+
+  case "razorpay":
+    const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay',orderData,{headers:{token}})
+    if (responseRazorpay.data.success) {
+      initPay(responseRazorpay.data.order)
+    }
+    break;
+          default:
+          break;
       }
-      
-      break;
-  
-    default:
-      break;
-  }
-}catch(error) {
-  console.log(error);
+    } catch (error) {
+      console.log(error);
       toast.error(error.message);
-}
-  }
+    }
+  };
   return (
-    <form  onSubmit={onSubmitHandler} className="flex flex-col sm:flex-row justify-between gap-4 sm:pt-14 min-h-[80vh] border-t">
+    <form
+      onSubmit={onSubmitHandler}
+      className="flex flex-col sm:flex-row justify-between gap-4 sm:pt-14 min-h-[80vh] border-t"
+    >
       {/* --------------Left Side ----------------- */}
       <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
         <div className="text-xl sm:text-2xl my-3">
@@ -84,7 +151,7 @@ try {
         </div>
         <div className="flex gap-3">
           <input
-          required
+            required
             onChange={onChangeHandler}
             name="firstName"
             value={formData.firstName}
@@ -93,7 +160,7 @@ try {
             placeholder="first name"
           />
           <input
-          required
+            required
             onChange={onChangeHandler}
             name="lastName"
             value={formData.lastName}
@@ -103,7 +170,7 @@ try {
           />
         </div>
         <input
-        required
+          required
           onChange={onChangeHandler}
           name="email"
           value={formData.email}
@@ -112,7 +179,7 @@ try {
           placeholder="email address"
         />
         <input
-        required
+          required
           onChange={onChangeHandler}
           name="street"
           value={formData.street}
@@ -122,7 +189,7 @@ try {
         />
         <div className="flex gap-3">
           <input
-          required
+            required
             onChange={onChangeHandler}
             name="city"
             value={formData.city}
@@ -131,7 +198,7 @@ try {
             placeholder="City"
           />
           <input
-          required
+            required
             onChange={onChangeHandler}
             name="state"
             value={formData.state}
@@ -142,7 +209,7 @@ try {
         </div>
         <div className="flex gap-3">
           <input
-          required
+            required
             onChange={onChangeHandler}
             name="zipcode"
             value={formData.zipcode}
@@ -151,7 +218,7 @@ try {
             placeholder="Zipcode"
           />
           <input
-          required
+            required
             onChange={onChangeHandler}
             name="country"
             value={formData.country}
@@ -161,7 +228,7 @@ try {
           />
         </div>
         <input
-        required
+          required
           onChange={onChangeHandler}
           name="phone"
           value={formData.phone}
@@ -219,7 +286,7 @@ try {
 
           <div className="w-full text-end mt-8">
             <button
-            type="submit" 
+              type="submit"
               className="bg-black text-white px-16 py-3 text-sm"
             >
               PLACE ORDER
