@@ -5,5 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-  }
+ },
+  build: {
+    rollupOptions: {
+      external: [],  // Add any external dependencies if necessary
+    },
+  },
 });
